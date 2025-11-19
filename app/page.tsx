@@ -27,12 +27,15 @@ export default function Home() {
     setStatus('sending');
 
     try {
-      const response = await fetch('/api/contact', {
+      // Netlify Forms werkt met standaard form submission
+      // De form wordt automatisch afgevangen en verwerkt door Netlify
+      const form = e.target as HTMLFormElement;
+      const formDataToSend = new FormData(form);
+      
+      const response = await fetch('/', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(formDataToSend as any).toString(),
       });
 
       if (response.ok) {
@@ -549,7 +552,18 @@ export default function Home() {
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form 
+                  name="contact"
+                  method="POST"
+                  data-netlify="true"
+                  netlify-honeypot="bot-field"
+                  onSubmit={handleSubmit} 
+                  className="space-y-6"
+                >
+                  <input type="hidden" name="form-name" value="contact" />
+                  <div style={{ display: 'none' }}>
+                    <input name="bot-field" />
+                  </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
